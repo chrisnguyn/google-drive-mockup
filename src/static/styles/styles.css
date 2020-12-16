@@ -1,0 +1,47 @@
+a {
+  line-height: 37px;
+}
+
+a:hover,
+a:focus,
+a:active {
+  color: #679DF6 !important;
+}
+
+.custom-bg-color {
+  background-color: #F5F5F9;
+}
+
+.list-group {
+    max-height: 500px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.item_custom {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
+  line-height: 37px;
+  padding: 5px;
+  vertical-align: middle;
+}
+
+.item_custom:nth-child(1) {
+  border-top: 1px solid #ddd;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.item_custom:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.button_custom {
+  text-align: right;
+}
+
+.list_custom {
+  line-height: 37px;
+}

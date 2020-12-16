@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <div class="jumbotron">
+    <h1 class="display-4">Welcome back!</h1>
+    <p class="lead">You have <strong>{{ files | length }}</strong> files waiting for you.</p>
+    <p class="lead">
+
+      Your top three used tags are:
+
+      {% if files | length == 0 %}
+
+        <strong>wait...you have no files! :(</strong>
+
+      {% else %}
+
+        {% for i in range(stats | length) %}
+
+          {% if i < 3 %}
+
+            <strong>{{ stats[i][0] }}</strong>
+
+          {% endif %}
+
+        {% endfor %}
+
+      {% endif %}
+
+    </p>
+  </div>
+</div>
+
+<div class="container pt-5">
+  <div>
+    <h1>Your Files</h1>
+    <!-- from: http://localhost:5000, redirect to: http://localhost:5000/tag?user_tag={input} -->
+    <form class="form-inline my-2 my-lg-0" method="GET" action="/tag"> <!-- search by images, adds ?user_tag={input} -->
+      <input class="form-control mr-sm-2" type="text" placeholder="Search by tag" aria-label="Search" name="user_tag">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+
+  <br>
+
+  <!-- /retrieve/ - base url + (replace everything else with this URL extension) -->
+  <!-- retrieve/ - append this onto whatever the current URL is -->
+  <ul class="list-group">
+    <div class="container">
+
+    {% for item in files %}
+
+        <div class="row item_custom">
+          <div class="col-md-11 list_custom">
+            <div style="overflow: hidden;">
+              <a href="/retrieve/{{ item.id }}" target="_blank">{{ item.name }}</a> <!-- clickable link to file -->
+              <div style="float: right"> <!-- tags -->
+
+                available tags
+
+                {% for tag in item.tag.split(',') %}
+
+                  {% if tag == 'NO_TAG' %}
+
+                    <p style="margin:0;display:inline;"> <strong>&#8226; no available tags :(</strong></p>
+
+                  {% else %}
+
+                    <p style="margin:0;display:inline;"> <strong>&#8226; {{ tag }} </strong></p>
+
+                  {% endif %}
+
+                {% endfor %}
+
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-1 button_custom"> <!-- button -->
+            <button id=" {{ item.id }}" type="button" class="btn btn-primary" onclick="location.href = '/delete/{{ item.id }}';"">Delete</button>
+          </div>
+        </div>
+
+    {% endfor %}
+
+    </div>
+  </ul>
+</div>
+
+{% endblock %}
