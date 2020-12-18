@@ -1,5 +1,4 @@
 import os
-from collections import Counter
 from flask import Flask, redirect, render_template, request, Response, send_file, url_for
 from flask_sqlalchemy import SQLAlchemy
 from io import BytesIO
@@ -13,9 +12,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 database = SQLAlchemy(app)
 
 
-# setup database schema
+# configure database schema
 class FileTable(database.Model):
-    __tablename__ = 'user_files'
+    __tablename__ = 'uploaded_files'
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(100))
     tag = database.Column(database.String(100))
@@ -32,44 +31,35 @@ class FileTable(database.Model):
         return f'FILE ID: {self.id} \n FILE NAME: {self.name} \n FILE TAG: {self.tag} \n'
 
 
-# reset database, add some dummy data
+# reset database, populate wtih some dummy data
 database.drop_all()
 database.create_all()
 
-file_open = open('src/static/media/awesome_image.jpg', 'rb')
-image_1 = file_open.read()
-file_open.close()
-file_open = open('src/static/media/king_of_shopify.jpg', 'rb')
-image_2 = file_open.read()
-file_open.close()
-file_open = open('src/static/media/cool_image.jpg', 'rb')
-image_3 = file_open.read()
-file_open.close()
-file_open = open('src/static/media/hello_world.jpg', 'rb')
-image_4 = file_open.read()
-file_open.close()
-file_open = open('src/static/media/shopify_hire_me_please.jpg', 'rb')
-image_5 = file_open.read()
-file_open.close()
-file_open = open('src/static/media/resume.pdf', 'rb')
-image_6 = file_open.read()
-file_open.close()
+image_1 = open('src/static/media/awesome_image.jpg', 'rb').read()
+image_2 = open('src/static/media/king_of_shopify.jpg', 'rb').read()
+image_3 = open('src/static/media/cool_image.jpg', 'rb').read()
+image_4 = open('src/static/media/hello_world.jpg', 'rb').read()
+image_5 = open('src/static/media/shopify_hire_me_please.jpg', 'rb').read()
+image_6 = open('src/static/media/resume.pdf', 'rb').read()
+image_7 = open('src/static/media/designdocument.pdf', 'rb').read()
 
-dummy_input_1 = FileTable('awesome_image.jpg', 'hi', image_1)
-dummy_input_2 = FileTable('king_of_shopify.jpg', 'tobi', image_2)
-dummy_input_3 = FileTable('cool_image.jpg', 'hire', image_3)
-dummy_input_4 = FileTable('hello_world.jpg', 'me', image_4)
-dummy_input_5 = FileTable('shopify_hire_me_please.jpg', 'please', image_5)
-dummy_input_6 = FileTable('heres_my_resume.pdf', 'chris resume', image_6)
+dummy_1 = FileTable('awesome_image.jpg', 'hi', image_1)
+dummy_2 = FileTable('king_of_shopify.jpg', 'tobi', image_2)
+dummy_3 = FileTable('cool_image.jpg', 'hire', image_3)
+dummy_4 = FileTable('hello_world.jpg', 'me', image_4)
+dummy_5 = FileTable('shopify_hire_me_please.jpg', 'please', image_5)
+dummy_6 = FileTable('heres_my_resume.pdf', 'chris resume', image_6)
+dummy_7 = FileTable('heres_how_i_built_this.pdf', 'design document', image_7)
 
-database.session.add_all([dummy_input_1, dummy_input_2, dummy_input_3, dummy_input_4, dummy_input_5, dummy_input_6])
+database.session.add_all([dummy_1, dummy_2, dummy_3, dummy_4, dummy_5, dummy_6, dummy_7])
 database.session.commit()
 
 
 # register URL routes
+# main page
 @app.route('/')
 def index():
-    user_tag = request.args.get('user_tag')  # user request.args.get() for QUERY STRING PARAMETERS
+    user_tag = request.args.get('user_tag')  # what files should I show? tags don't show if user is filtering
 
     if user_tag:
         files = FileTable.query.filter_by(tag=user_tag)
@@ -78,35 +68,38 @@ def index():
         files = FileTable.query.all()
         show_tags = True
 
-    tags = {}
+    tags = {}  # your top 3 tags
     for file in files:
-        for x in file.tag.split(' '):
-            if x == 'NO_TAG':
+        for tag in file.tag.split(' '):
+            if tag == 'NO_TAG':
                 continue
-            elif x not in tags:
-                tags[x] = 0
-            tags[x] += 1
+            elif tag not in tags:
+                tags[tag] = 0
+            tags[tag] += 1
     sorted_tags = sorted(tags.items(), key=lambda x: x[1], reverse=True)
 
-    last_uploaded = FileTable.query.order_by('-id').first()
+    last_uploaded = FileTable.query.order_by('-id').first()  # last uploaded file
 
     return render_template('index.html', files=files, stats=sorted_tags, show=show_tags, last=last_uploaded)
 
 
+# about me page
 @app.route('/me')
 def me():
     return render_template('me.html')
 
 
+# about 'you' page
 @app.route('/you')
 def you():
     return render_template('you.html')
 
 
+# if user is searching by specific tags
 @app.route('/tag/')
 def search_tag():
-    user_tag = request.args.get('user_tag')  # i.e. '?user_tag=shopify', requesting user_tag gives the value to this key
-    search = f'%{user_tag}%'  # https://stackoverflow.com/questions/3325467/sqlalchemy-equivalent-to-sql-like-statement
+    user_tag = request.args.get('user_tag')  # ie. '?user_tag=shopify'
+    search = f'%{user_tag}%'
     files = FileTable.query.filter(FileTable.tag.like(search)).all()
 
     if len(user_tag) == 0:
@@ -115,18 +108,19 @@ def search_tag():
     return render_template('index.html', files=files, last='REDIRECTFROMTAG')
 
 
+# upload page
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    if request.method == 'GET':  # if user visits this page manually (GET) then return default page
+    if request.method == 'GET':
         return render_template('upload.html')
-    elif request.method == 'POST':  # if user visits this page through uploading a file (POST) submit it to database
+    elif request.method == 'POST':
         try:
             request.files['user_file']
         except Exception as e:
             return render_template('error.html')
 
         file = request.files['user_file']  # use request.[type] for FORM DATA; get file from form sent to server
-        tag = request.form['user_caption']  # get tag sent from form sent to server (if it exists), tag can be 'chris,nguyen,shopify' - delimited by commas
+        tag = request.form['user_caption']  # get tag sent from form sent to server (if it exists)
 
         if not tag:
             tag = 'NO_TAG'
@@ -137,6 +131,7 @@ def upload():
         return redirect(url_for('index'))
 
 
+# opening a file that was uploaded to database
 @app.route('/retrieve/<id>')
 def retrieve(id):
     file = FileTable.query.filter_by(id=id).first()
@@ -148,7 +143,8 @@ def retrieve(id):
     return send_file(data, attachment_filename=f'{file.name}')
 
 
-@app.route('/delete/<id>')  # you can delete just by visiting the endpoint which isn't great but I'm too tired for this
+# deleting a file
+@app.route('/delete/<id>')
 def delete(id):
     file = FileTable.query.filter_by(id=id).first()
 
@@ -157,9 +153,10 @@ def delete(id):
 
     database.session.delete(file)
     database.session.commit()
-    return redirect(url_for('index'))  # url_for generates the link, redirect actually goes to it
+    return redirect(url_for('index'))
 
 
+# visiting an unregistered route
 @app.errorhandler(404)
 def error(e):
     return render_template('error.html')
@@ -169,4 +166,4 @@ if __name__ == "__main__":
     print('\n#########################')
     print('\n\nFile Repository Backend Challenge - made with love by Christopher Nguyen :)\n\n')
     print('#########################\n')
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0')
