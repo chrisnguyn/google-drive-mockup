@@ -1,7 +1,3 @@
-a {
-  line-height: 37px;
-}
-
 a:hover,
 a:focus,
 a:active {
@@ -18,15 +14,6 @@ a:active {
     -webkit-overflow-scrolling: touch;
 }
 
-.item_custom {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-top: none;
-  line-height: 37px;
-  padding: 5px;
-  vertical-align: middle;
-}
-
 .item_custom:nth-child(1) {
   border-top: 1px solid #ddd;
   border-top-left-radius: 5px;
@@ -38,10 +25,24 @@ a:active {
   border-bottom-right-radius: 5px;
 }
 
-.button_custom {
-  text-align: right;
+.item_custom {
+  padding: 5px;
+  vertical-align: middle;
+  line-height: 37px;
+
+  background: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
 }
 
 .list_custom {
   line-height: 37px;
+}
+
+a {
+  line-height: 37px;
+}
+
+.button_custom {
+  text-align: right;
 }
