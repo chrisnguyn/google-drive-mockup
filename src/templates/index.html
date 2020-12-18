@@ -3,28 +3,48 @@
 {% block content %}
 
 <div class="container">
-  <div class="jumbotron">
-    <h1 class="display-4">Welcome back!</h1>
+  <div class="jumbotron" style="padding-bottom: 15px; background-color: #E8F0FF"> <!-- background-color: #108043" -->
+    <h1 class="display-4">Welcome!</h1>
     <p class="lead">You have <strong>{{ files | length }}</strong> files waiting for you.</p>
     <p class="lead">
 
-      Your top three used tags are:
+      {% if show %}
 
-      {% if files | length == 0 %}
+        Your top three used tags are:
 
-        <strong>wait...you have no files! :(</strong>
+        {% if files | length == 0 %}
+
+          <strong>wait...you have no files! :(</strong>
+
+        {% else %}
+
+          {% for i in range(stats | length) %}
+
+            {% if i < 3 %}
+
+              <strong>{{ stats[i][0] }}</strong>
+
+            {% endif %}
+
+          {% endfor %}
+
+        {% endif %}
+
+      {% endif %}
+
+    </p>
+
+    <p class="lead">
+
+      {% if last == 'REDIRECTFROMTAG' %}
+
+      {% elif last != None %}
+
+        The last file you uploaded was: <a href="/retrieve/{{ last.id }}" target="_blank" data-toggle="lightbox">{{ last.name }}</a>
 
       {% else %}
 
-        {% for i in range(stats | length) %}
-
-          {% if i < 3 %}
-
-            <strong>{{ stats[i][0] }}</strong>
-
-          {% endif %}
-
-        {% endfor %}
+        The last file you uploaded was: <strong>wait...there isn't one! :(</strong>
 
       {% endif %}
 
@@ -32,11 +52,12 @@
   </div>
 </div>
 
-<div class="container pt-5">
+<div class="container pt-3"> <!-- https://getbootstrap.com/docs/4.0/utilities/spacing/ -->
   <div>
-    <h1>Your Files</h1>
-    <!-- from: http://localhost:5000, redirect to: http://localhost:5000/tag?user_tag={input} -->
-    <form class="form-inline my-2 my-lg-0" method="GET" action="/tag"> <!-- search by images, adds ?user_tag={input} -->
+    <h1 style="color: #3C464F;">Your Files</h1>
+    <!-- from: http://localhost:5000 -->
+    <!-- redirect to: http://localhost:5000/tag?user_tag=shopify -->
+    <form class="form-inline my-2 my-lg-0" method="GET" action="/tag"> <!-- search by images, adds ?user_tag={their_input} -->
       <input class="form-control mr-sm-2" type="text" placeholder="Search by tag" aria-label="Search" name="user_tag">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
@@ -44,22 +65,24 @@
 
   <br>
 
-  <!-- /retrieve/ - base url + (replace everything else with this URL extension) -->
-  <!-- retrieve/ - append this onto whatever the current URL is -->
+  <!-- /retrieve/ means to do base url + (replace everything else with this URL extension) -->
+  <!-- retrieve/ means to append this onto whatever the current URL is -->
   <ul class="list-group">
     <div class="container">
 
     {% for item in files %}
 
         <div class="row item_custom">
+
           <div class="col-md-11 list_custom">
+
             <div style="overflow: hidden;">
-              <a href="/retrieve/{{ item.id }}" target="_blank">{{ item.name }}</a> <!-- clickable link to file -->
-              <div style="float: right"> <!-- tags -->
+              <a href="/retrieve/{{item.id}}" target="_blank">{{ item.name }}</a>
 
-                available tags
+              <div style="float: right">
+                tagged as
 
-                {% for tag in item.tag.split(',') %}
+                {% for tag in item.tag.split(' ') %}
 
                   {% if tag == 'NO_TAG' %}
 
@@ -74,11 +97,15 @@
                 {% endfor %}
 
               </div>
+
             </div>
+
           </div>
-          <div class="col-sm-1 button_custom"> <!-- button -->
+
+          <div class="col-sm-1 button_custom">
             <button id=" {{ item.id }}" type="button" class="btn btn-primary" onclick="location.href = '/delete/{{ item.id }}';"">Delete</button>
           </div>
+
         </div>
 
     {% endfor %}

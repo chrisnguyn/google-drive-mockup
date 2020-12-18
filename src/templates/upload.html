@@ -3,15 +3,16 @@
 {% block content %}
 
 <div class="container">
-  <div class="jumbotron">
+  <div class="jumbotron" style="padding-bottom: 15px;">
     <h1 class="display-4">Hi there!</h1>
     <p class="lead">Thanks for using my file repository web application.</p>
     <hr class="my-4">
-    <p>Use the input below to upload a file!</p>
+    <p>Use the input below to upload a file! You can add an optional tag to a photo to filter by later.</p>
+    <p>To have multiple tags, separate tags using a space. Example: <strong>'cute small brown cat'</strong> will be given <strong>4</strong> tags.</p>
 
     <!-- without enctype="multipart/form-data", you could see form the request headers 'form data'; insecure so add this to encode it -->
     <form method="POST" action="/upload" enctype="multipart/form-data">
-      <input type="text" placeholder="Add optional tag" name="user_caption">
+      <input type="text" placeholder="Add optional tag(s)" name="user_caption">
       <input type="file" name="user_file"> <!-- THIS is what prompts that window to open when you click on it; TYPE="FILE" -->
       <br><br>
       <button type="submit" class="btn btn-primary">Upload!</button> <!-- when you submit, execute the action (go to /upload) -->
