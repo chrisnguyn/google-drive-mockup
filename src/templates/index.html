@@ -77,20 +77,37 @@
           <div class="col-md-11 list_custom">
 
             <div style="overflow: hidden;">
-              <a href="/retrieve/{{item.id}}" target="_blank">{{ item.name }}</a>
+              <a href="/retrieve/{{item.id}}" target="_blank">
+
+                {% if item.name.split('.')[-1] != 'pdf' and item.name.split('.')[-1] != 'doc' and item.name.split('.')[-1] != 'docx' %}
+
+                  <img class="custom_img" src="http://localhost:5000/retrieve/{{item.id}}" width="50px" height ="50px">
+                  <span class="custom_txt">{{ item.name }}</span>
+
+                {% else %}
+
+                  <img class="custom_img" src="/static/media/placeholder.png" width="50px" height ="50px">
+                  {{ item.name }}
+
+                {% endif %}
+
+              </a>
 
               <div style="float: right">
-                tagged as
+                <!-- tagged as -->
 
                 {% for tag in item.tag.split(' ') %}
 
                   {% if tag == 'NO_TAG' %}
 
-                    <p style="margin:0;display:inline;"> <strong>&#8226; no available tags :(</strong></p>
+                  <span class="badge badge-pill badge-primary"> no tags available :( </span>
+                    <!-- <p style="margin:0;display:inline;"> <strong>&#8226; no available tags :(</strong></p> -->
 
                   {% else %}
 
-                    <p style="margin:0;display:inline;"> <strong>&#8226; {{ tag }} </strong></p>
+                     <!-- <h6>Example heading <span class="badge badge-secondary">New</span></h6> use chips -->
+                    <!-- <p style="margin:0;display:inline;"> <strong>&#8226; {{ tag }} </strong></p> -->
+                    <span class="badge badge-pill badge-primary"> {{ tag }} </span>
 
                   {% endif %}
 
@@ -103,7 +120,7 @@
           </div>
 
           <div class="col-sm-1 button_custom">
-            <button id=" {{ item.id }}" type="button" class="btn btn-primary" onclick="location.href = '/delete/{{ item.id }}';"">Delete</button>
+            <button id=" {{ item.id }}" type="button" class="btn btn-danger" onclick="location.href = '/delete/{{ item.id }}';"">Delete</button>
           </div>
 
         </div>

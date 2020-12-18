@@ -1,7 +1,7 @@
 a:hover,
 a:focus,
 a:active {
-  color: #679DF6 !important;
+  color: #88D1F1 !important;
 }
 
 .custom-bg-color {
@@ -45,4 +45,12 @@ a {
 
 .button_custom {
   text-align: right;
+}
+
+.custom_img {
+  border-radius: 15px !important;
+}
+
+.custom_txt {
+  padding-left: 10px !important;
 }

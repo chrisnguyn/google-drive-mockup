@@ -56,7 +56,6 @@ database.session.commit()
 
 
 # register URL routes
-# main page
 @app.route('/')
 def index():
     user_tag = request.args.get('user_tag')  # what files should I show? tags don't show if user is filtering
@@ -163,7 +162,7 @@ def error(e):
 
 
 if __name__ == "__main__":
-    print('\n#########################')
+    print('\n###########################################################################')
     print('\n\nFile Repository Backend Challenge - made with love by Christopher Nguyen :)\n\n')
-    print('#########################\n')
-    app.run(host='0.0.0.0')
+    print('###########################################################################\n')
+    app.run(debug=True, host='0.0.0.0')
