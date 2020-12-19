@@ -22,7 +22,7 @@
 
             {% if i < 3 %}
 
-              <strong>{{ stats[i][0] }}</strong>
+              <span class="badge badge-primary"><a class="a-tag" href="/tag/?user_tag={{ stats[i][0] }}"> {{ stats[i][0] }} </a></span>
 
             {% endif %}
 
@@ -38,7 +38,7 @@
 
       {% if last %}
 
-        The last file you uploaded was: <a href="/retrieve/{{ last.id }}" target="_blank" data-toggle="lightbox">{{ last.name }}</a>
+        The last file you uploaded was: <a href="/retrieve/{{ last.id }}" target="_blank">{{ last.name }}</a>
 
       {% endif %}
 
@@ -94,7 +94,7 @@
 
                   {% else %}
 
-                    <span class="badge badge-primary"> {{ tag }} </span>
+                    <span class="badge badge-primary"><a class="a-tag" href="/tag/?user_tag={{ tag }}"> {{ tag }} </a></span>
 
                   {% endif %}
 

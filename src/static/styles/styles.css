@@ -4,6 +4,10 @@ a:active {
   color: #88D1F1 !important;
 }
 
+.a-tag {
+  color: #FFF !important;
+}
+
 .custom-bg-color {
   background-color: #F5F5F9;
 }
