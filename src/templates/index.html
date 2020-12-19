@@ -36,15 +36,9 @@
 
     <p class="lead">
 
-      {% if last == 'REDIRECTFROMTAG' %}
-
-      {% elif last != None %}
+      {% if last %}
 
         The last file you uploaded was: <a href="/retrieve/{{ last.id }}" target="_blank" data-toggle="lightbox">{{ last.name }}</a>
-
-      {% else %}
-
-        The last file you uploaded was: <strong>wait...there isn't one! :(</strong>
 
       {% endif %}
 
@@ -63,8 +57,7 @@
 
   <br>
 
-  <!-- /retrieve/ means to do base url + (replace everything else with this URL extension) -->
-  <!-- retrieve/ means to append this onto whatever the current URL is -->
+  <!-- '/retrieve/' means to do base url + (replace everything else with this URL extension), 'retrieve/' means to append this onto whatever the current URL is -->
   <ul class="list-group">
     <div class="container">
 
@@ -96,6 +89,8 @@
                   {% if tag == 'NO_TAG' %}
 
                     <span class="badge badge-primary"> no tags available :( </span>
+
+                  {% elif tag == '' %}
 
                   {% else %}
 

@@ -1,4 +1,5 @@
 import os
+from auxiliary import *
 from flask import Flask, redirect, render_template, request, Response, send_file, url_for
 from flask_sqlalchemy import SQLAlchemy
 from io import BytesIO
@@ -12,9 +13,94 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 database = SQLAlchemy(app)
 
 
+# register URL routes
+@app.route('/')
+def index():
+    user_tag = request.args.get('user_tag')
+
+    if user_tag == None:
+        files = FileTable.query.all()
+    else:
+        files = FileTable.query.filter_by(tag=user_tag)
+
+    tags = get_top_tags(files)
+    last_uploaded = FileTable.query.order_by('-id').first()
+
+    return render_template('index.html', files=files, stats=tags, show=user_tag==None, last=last_uploaded)
+
+
+@app.route('/me')
+def me():
+    return render_template('me.html')
+
+
+@app.route('/you')
+def you():
+    return render_template('you.html')
+
+
+@app.route('/tag/')
+def search_tag():
+    user_tag = request.args.get('user_tag')  # ie. '?user_tag=shopify'
+
+    if user_tag == None or len(user_tag) == 0:
+        return redirect(url_for('index'))
+
+    files = FileTable.query.filter(FileTable.tag.like(f'%{user_tag}%')).all()
+
+    return render_template('index.html', files=files)
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'GET':
+        return render_template('upload.html')
+
+    try:
+        file = request.files['user_file']  # use request.[type] for FORM DATA; get file from form sent to server
+        tag = clean_tags(request.form['user_caption']) or 'NO_TAG'
+    except Exception as e:
+        print(e)
+        return render_template('error.html')
+
+    database.session.add(FileTable(file.filename, tag, file.read()))
+    database.session.commit()
+
+    return redirect(url_for('index'))
+
+
+@app.route('/retrieve/<id>')
+def retrieve(id):
+    file = FileTable.query.filter_by(id=id).first()
+
+    if not file:
+        return render_template('error.html')
+
+    return send_file(BytesIO(file.file), attachment_filename=f'{file.name}')
+
+
+@app.route('/delete/<id>')
+def delete(id):
+    file = FileTable.query.filter_by(id=id).first()
+
+    if not file:
+        return render_template('error.html')
+
+    database.session.delete(file)
+    database.session.commit()
+
+    return redirect(url_for('index'))
+
+
+@app.errorhandler(404)
+def error(e):
+    print(e)
+    return render_template('error.html')
+
+
 # configure database schema
 class FileTable(database.Model):
-    __tablename__ = 'uploaded_files'
+    __tablename__ = 'USER_FILES'
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(100))
     tag = database.Column(database.String(100))
@@ -53,112 +139,6 @@ dummy_7 = FileTable('how_this_was_built.pdf', 'design document', image_7)
 
 database.session.add_all([dummy_1, dummy_2, dummy_3, dummy_4, dummy_5, dummy_6, dummy_7])
 database.session.commit()
-
-
-# register URL routes
-@app.route('/')
-def index():
-    user_tag = request.args.get('user_tag')  # what files should to show, tags don't show if user is filtering
-
-    if user_tag:
-        files = FileTable.query.filter_by(tag=user_tag)
-        show_tags = False
-    else:
-        files = FileTable.query.all()
-        show_tags = True
-
-    tags = {}  # your top 3 tags
-    for file in files:
-        for tag in file.tag.split(' '):
-            if tag == 'NO_TAG':
-                continue
-            elif tag not in tags:
-                tags[tag] = 0
-            tags[tag] += 1
-    sorted_tags = sorted(tags.items(), key=lambda x: x[1], reverse=True)
-
-    last_uploaded = FileTable.query.order_by('-id').first()  # last uploaded file
-
-    return render_template('index.html', files=files, stats=sorted_tags, show=show_tags, last=last_uploaded)
-
-
-# about me page
-@app.route('/me')
-def me():
-    return render_template('me.html')
-
-
-# about 'you' page
-@app.route('/you')
-def you():
-    return render_template('you.html')
-
-
-# if user is searching by specific tags
-@app.route('/tag/')
-def search_tag():
-    user_tag = request.args.get('user_tag')  # ie. '?user_tag=shopify'
-    search = f'%{user_tag}%'
-    files = FileTable.query.filter(FileTable.tag.like(search)).all()
-
-    if len(user_tag) == 0:
-        return redirect(url_for('index'))
-
-    return render_template('index.html', files=files, last='REDIRECTFROMTAG')
-
-
-# upload page
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
-    if request.method == 'GET':
-        return render_template('upload.html')
-    elif request.method == 'POST':
-        try:
-            request.files['user_file']
-        except Exception as e:
-            return render_template('error.html')
-
-        file = request.files['user_file']  # use request.[type] for FORM DATA; get file from form sent to server
-        tag = request.form['user_caption']  # get tag sent from form sent to server (if it exists)
-
-        if not tag:
-            tag = 'NO_TAG'
-
-        database.session.add(FileTable(file.filename, tag, file.read()))
-        database.session.commit()
-
-        return redirect(url_for('index'))
-
-
-# opening a file that was uploaded to database
-@app.route('/retrieve/<id>')
-def retrieve(id):
-    file = FileTable.query.filter_by(id=id).first()
-
-    if not file:
-        return render_template('error.html')
-
-    data = BytesIO(file.file)
-    return send_file(data, attachment_filename=f'{file.name}')
-
-
-# deleting a file
-@app.route('/delete/<id>')
-def delete(id):
-    file = FileTable.query.filter_by(id=id).first()
-
-    if not file:
-        return render_template('error.html')
-
-    database.session.delete(file)
-    database.session.commit()
-    return redirect(url_for('index'))
-
-
-# visiting an unregistered route
-@app.errorhandler(404)
-def error(e):
-    return render_template('error.html')
 
 
 if __name__ == "__main__":
