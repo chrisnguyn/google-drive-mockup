@@ -48,8 +48,8 @@ dummy_2 = FileTable('king_of_shopify.jpg', 'tobi', image_2)
 dummy_3 = FileTable('cool_image.jpg', 'hire', image_3)
 dummy_4 = FileTable('hello_world.jpg', 'me', image_4)
 dummy_5 = FileTable('shopify_hire_me_please.jpg', 'please', image_5)
-dummy_6 = FileTable('heres_my_resume.pdf', 'chris resume', image_6)
-dummy_7 = FileTable('heres_how_i_built_this.pdf', 'design document', image_7)
+dummy_6 = FileTable('my_resume.pdf', 'chris resume', image_6)
+dummy_7 = FileTable('how_this_was_built.pdf', 'design document', image_7)
 
 database.session.add_all([dummy_1, dummy_2, dummy_3, dummy_4, dummy_5, dummy_6, dummy_7])
 database.session.commit()
@@ -58,7 +58,7 @@ database.session.commit()
 # register URL routes
 @app.route('/')
 def index():
-    user_tag = request.args.get('user_tag')  # what files should I show? tags don't show if user is filtering
+    user_tag = request.args.get('user_tag')  # what files should to show, tags don't show if user is filtering
 
     if user_tag:
         files = FileTable.query.filter_by(tag=user_tag)

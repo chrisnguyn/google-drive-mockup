@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="container">
-  <div class="jumbotron" style="padding-bottom: 15px; background-color: #E8F0FF"> <!-- background-color: #108043" -->
+  <div class="jumbotron" style="padding-bottom: 15px; background-color: #E8F0FF">
     <h1 class="display-4">Welcome!</h1>
     <p class="lead">You have <strong>{{ files | length }}</strong> files waiting for you.</p>
     <p class="lead">
@@ -55,9 +55,7 @@
 <div class="container pt-3"> <!-- https://getbootstrap.com/docs/4.0/utilities/spacing/ -->
   <div>
     <h1 style="color: #3C464F;">Your Files</h1>
-    <!-- from: http://localhost:5000 -->
-    <!-- redirect to: http://localhost:5000/tag?user_tag=shopify -->
-    <form class="form-inline my-2 my-lg-0" method="GET" action="/tag"> <!-- search by images, adds ?user_tag={their_input} -->
+    <form class="form-inline my-2 my-lg-0" method="GET" action="/tag"> <!-- from: http://localhost:5000, redirect to: http://localhost:5000/tag?user_tag={input} -->
       <input class="form-control mr-sm-2" type="text" placeholder="Search by tag" aria-label="Search" name="user_tag">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
@@ -73,56 +71,46 @@
     {% for item in files %}
 
         <div class="row item_custom">
-
           <div class="col-md-11 list_custom">
-
             <div style="overflow: hidden;">
               <a href="/retrieve/{{item.id}}" target="_blank">
 
                 {% if item.name.split('.')[-1] != 'pdf' and item.name.split('.')[-1] != 'doc' and item.name.split('.')[-1] != 'docx' %}
 
-                  <img class="custom_img" src="http://localhost:5000/retrieve/{{item.id}}" width="50px" height ="50px">
-                  <span class="custom_txt">{{ item.name }}</span>
+                  <img class="custom_img" src="http://localhost:5000/retrieve/{{item.id}}" width="40px" height ="40px">
 
                 {% else %}
 
-                  <img class="custom_img" src="/static/media/placeholder.png" width="50px" height ="50px">
-                  {{ item.name }}
+                  <img class="custom_img" src="/static/media/placeholder.png" width="40px" height ="40px">
 
                 {% endif %}
+
+                <span class="custom_txt">{{ item.name }}</span>
 
               </a>
 
               <div style="float: right">
-                <!-- tagged as -->
 
                 {% for tag in item.tag.split(' ') %}
 
                   {% if tag == 'NO_TAG' %}
 
-                  <span class="badge badge-pill badge-primary"> no tags available :( </span>
-                    <!-- <p style="margin:0;display:inline;"> <strong>&#8226; no available tags :(</strong></p> -->
+                    <span class="badge badge-primary"> no tags available :( </span>
 
                   {% else %}
 
-                     <!-- <h6>Example heading <span class="badge badge-secondary">New</span></h6> use chips -->
-                    <!-- <p style="margin:0;display:inline;"> <strong>&#8226; {{ tag }} </strong></p> -->
-                    <span class="badge badge-pill badge-primary"> {{ tag }} </span>
+                    <span class="badge badge-primary"> {{ tag }} </span>
 
                   {% endif %}
 
                 {% endfor %}
 
               </div>
-
             </div>
-
           </div>
-
           <div class="col-sm-1 button_custom">
             <button id=" {{ item.id }}" type="button" class="btn btn-danger" onclick="location.href = '/delete/{{ item.id }}';"">Delete</button>
           </div>
-
         </div>
 
     {% endfor %}
