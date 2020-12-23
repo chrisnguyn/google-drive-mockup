@@ -1,12 +1,13 @@
 # Shopify Summer 2021 Backend Challenge <img src="https://github.com/chrisngyn/chrisngyn/blob/master/Hi.gif" width="30px">
 
 ## Abstract
-This is a file repository project created for Shopify's summer 2021 backend developer intern challenge. This user is able to upload and view files, attach optional 'tags' to photos, and can filter photos by their respective tags.
+This is a file repository project created for Shopify's summer 2021 backend developer intern challenge. This user is able to upload and view files, attach optional 'tags' to photos, and can filter files by their respective tags. Supports images, documents, even video files!
 
 This project is made with HTML + CSS + JS + Bootstrap for the frontend, Python + Flask for the backend, a SQLite database to store images, and SQLAlchemy as the ORM.
 
 *pls hire me @Shopify*
 
+<p align="center"><img src="https://github.com/chrisngyn/shopify-file-repo/blob/main/src/static/media/demo.gif" width="80%"></p>
 
 ## Configuration
 You can run this project in one of two ways.
@@ -59,6 +60,7 @@ There are several things I would like to add onto this project in the future sho
 1. User authentication (be able register with an email / password)
 2. Suggested tags with image recognition on uploading files (using OpenCV)
 3. Have ephemeral based file sharing sessions with friends (using some socket magic)
+4. Use lightbox to open images from the main page instead of opening it in a new tab
 
 
 ## Miscellaneous
