@@ -46,7 +46,7 @@
   </div>
 </div>
 
-<div class="container pt-3"> <!-- https://getbootstrap.com/docs/4.0/utilities/spacing/ -->
+<div class="container pt-3">
   <div>
     <h1 style="color: #3C464F;">Your Files</h1>
     <form class="form-inline my-2 my-lg-0" method="GET" action="/tag"> <!-- from: http://localhost:5000, redirect to: http://localhost:5000/tag?user_tag={input} -->
@@ -57,8 +57,7 @@
 
   <br>
 
-  <!-- '/retrieve/' means to do base url + (replace everything else with this URL extension), 'retrieve/' means to append this onto whatever the current URL is -->
-  <ul class="list-group">
+  <ul class="list-group"> <!-- '/retrieve/' means to do base url + (replace everything with this URL), 'retrieve/' means to append this onto current URL -->
     <div class="container">
 
     {% for item in files %}
@@ -71,8 +70,6 @@
                 {% if item.name.split('.')[-1] != 'pdf' and item.name.split('.')[-1] != 'doc' and item.name.split('.')[-1] != 'docx' %}
 
                   <img class="custom_img" src="../static/media/{{item.name}}" width="40px" height ="40px">
-                  <!-- src="http://localhost:5000/retrieve/{{item.id}}" -->
-                  <!-- src="../static/{{item.name}}" -->
 
                 {% else %}
 
@@ -96,7 +93,7 @@
 
                   {% else %}
 
-                    <span class="badge badge-primary"><a class="a-tag" href="/tag/?user_tag={{ tag }}"> {{ tag }} </a></span>
+                    <span class="badge badge-primary"><a class="a-tag" href="/tag/?user_tag={{ tag }}">{{ tag }}</a></span>
 
                   {% endif %}
 
@@ -106,7 +103,7 @@
             </div>
           </div>
           <div class="col-sm-1 button_custom">
-            <button id=" {{ item.id }}" type="button" class="btn btn-danger" onclick="location.href = '/delete/{{ item.id }}';"">Delete</button>
+            <button id="{{ item.id }}" type="button" class="btn btn-danger" onclick="location.href='/delete/{{ item.id }}'">Delete</button>
           </div>
         </div>
 

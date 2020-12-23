@@ -16,17 +16,12 @@ database = SQLAlchemy(app)
 # register URL routes
 @app.route('/')
 def index():
-    user_tag = request.args.get('user_tag')
-
-    if user_tag == None:
-        files = FileTable.query.all()
-    else:
-        files = FileTable.query.filter_by(tag=user_tag)
-
-    tags = get_top_tags(files)
+    user_query = request.args.get('user_tag')  # ie. '?user_tag=shopify'
+    files = FileTable.query.all() if not user_query else FileTable.query.filter_by(tag=user_query)
     last_uploaded = FileTable.query.order_by('-id').first()
+    tags = get_top_tags(files)
 
-    return render_template('index.html', files=files, stats=tags, show=user_tag==None, last=last_uploaded)
+    return render_template('index.html', files=files, stats=tags, show=user_query==None, last=last_uploaded)
 
 
 @app.route('/me')
@@ -41,12 +36,11 @@ def you():
 
 @app.route('/tag/')
 def search_tag():
-    user_tag = request.args.get('user_tag')  # ie. '?user_tag=shopify'
+    user_query = request.args.get('user_tag')
+    files = FileTable.query.filter(FileTable.tag.like(f'%{user_query}%')).all()
 
-    if user_tag == None or len(user_tag) == 0:
+    if not user_query:
         return redirect(url_for('index'))
-
-    files = FileTable.query.filter(FileTable.tag.like(f'%{user_tag}%')).all()
 
     return render_template('index.html', files=files)
 
@@ -57,13 +51,13 @@ def upload():
         return render_template('upload.html')
 
     try:
-        file = request.files['user_file']  # use request.[type] for FORM DATA; get file from form sent to server
-        tag = clean_tags(request.form['user_caption']) or 'NO_TAG'
+        file = request.files['user_file']  # request.[type] for form data; get file from the form sent to server
+        tags = clean_tags(request.form['user_caption']) or 'NO_TAG'
     except Exception as e:
         print(e)
         return render_template('error.html')
 
-    database.session.add(FileTable(file.filename, tag, file.read()))
+    database.session.add(FileTable(file.filename, tags, file.read()))
     database.session.commit()
 
     return redirect(url_for('index'))
@@ -134,15 +128,15 @@ dummy_2 = FileTable('king_of_shopify.jpg', 'tobi', image_2)
 dummy_3 = FileTable('cool_image.jpg', 'hire', image_3)
 dummy_4 = FileTable('hello_world.jpg', 'me', image_4)
 dummy_5 = FileTable('shopify_hire_me_please.jpg', 'please', image_5)
-dummy_6 = FileTable('my_resume.pdf', 'chris resume', image_6)
+dummy_6 = FileTable('my_resume.pdf', 'my resume', image_6)
 dummy_7 = FileTable('how_this_was_built.pdf', 'design document', image_7)
 
 database.session.add_all([dummy_1, dummy_2, dummy_3, dummy_4, dummy_5, dummy_6, dummy_7])
 database.session.commit()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     print('\n###########################################################################')
     print('\n\nFile Repository Backend Challenge - made with love by Christopher Nguyen :)\n\n')
     print('###########################################################################\n')
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0')
