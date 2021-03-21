@@ -118,5 +118,5 @@ database.session.commit()
 
 
 if __name__ == '__main__':
-    print('\nNow turning now...\n')
+    print('\nTurning on...\n')
     app.run(host='0.0.0.0')
