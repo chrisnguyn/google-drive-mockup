@@ -16,22 +16,12 @@ database = SQLAlchemy(app)
 # register URL routes
 @app.route('/')
 def index():
-    user_query = request.args.get('user_tag')  # ie. '?user_tag=shopify'
+    user_query = request.args.get('user_tag')  # ie. '?user_tag=bananas'
     files = FileTable.query.all() if not user_query else FileTable.query.filter_by(tag=user_query)
     last_uploaded = FileTable.query.order_by('-id').first()
     tags = get_top_tags(files)
 
     return render_template('index.html', files=files, stats=tags, show=user_query==None, last=last_uploaded)
-
-
-@app.route('/me')
-def me():
-    return render_template('me.html')
-
-
-@app.route('/you')
-def you():
-    return render_template('you.html')
 
 
 @app.route('/tag/')
@@ -115,28 +105,18 @@ class FileTable(database.Model):
 database.drop_all()
 database.create_all()
 
-image_1 = open('src/static/media/awesome_image.jpg', 'rb').read()
-image_2 = open('src/static/media/king_of_shopify.jpg', 'rb').read()
-image_3 = open('src/static/media/cool_image.jpg', 'rb').read()
-image_4 = open('src/static/media/hello_world.jpg', 'rb').read()
-image_5 = open('src/static/media/shopify_hire_me_please.jpg', 'rb').read()
-image_6 = open('src/static/media/resume.pdf', 'rb').read()
-image_7 = open('src/static/media/designdocument.pdf', 'rb').read()
+image_1 = open('src/static/media/dummyimage.png', 'rb').read()
+image_2 = open('src/static/media/another_dummy_image.jpg', 'rb').read()
+image_3 = open('src/static/media/bananas.jpg', 'rb').read()
 
-dummy_1 = FileTable('awesome_image.jpg', 'hi', image_1)
-dummy_2 = FileTable('king_of_shopify.jpg', 'tobi', image_2)
-dummy_3 = FileTable('cool_image.jpg', 'hire', image_3)
-dummy_4 = FileTable('hello_world.jpg', 'me', image_4)
-dummy_5 = FileTable('shopify_hire_me_please.jpg', 'please', image_5)
-dummy_6 = FileTable('my_resume.pdf', 'my resume', image_6)
-dummy_7 = FileTable('how_this_was_built.pdf', 'design document', image_7)
+dummy_1 = FileTable('dummyimage.png', 'dummy image', image_1)
+dummy_2 = FileTable('another_dummy_image.jpg', 'another dummy image', image_2)
+dummy_3 = FileTable('bananas.jpg', 'idk what to put here', image_3)
 
-database.session.add_all([dummy_1, dummy_2, dummy_3, dummy_4, dummy_5, dummy_6, dummy_7])
+database.session.add_all([dummy_1, dummy_2, dummy_3])
 database.session.commit()
 
 
 if __name__ == '__main__':
-    print('\n###########################################################################')
-    print('\n\nFile Repository Backend Challenge - made with love by Christopher Nguyen :)\n\n')
-    print('###########################################################################\n')
+    print('\nNow turning now...\n')
     app.run(host='0.0.0.0')
