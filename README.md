@@ -58,3 +58,4 @@ There are several things I would like to add onto this project should I keep wor
 2. Suggested tags with image recognition on uploading files (using OpenCV)
 3. Have ephemeral based file sharing sessions with friends (using some socket magic)
 4. Use lightbox to open images from the main page instead of opening it in a new tab
+ 
